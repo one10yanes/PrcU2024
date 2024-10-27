@@ -1,27 +1,32 @@
-document.addEventListener('DOMContentLoaded', function () {
-    // Referencias a los enlaces del menú
-    const registerCamera = document.getElementById('register-camera');
-    const viewCamera = document.getElementById('view-camera');
+document.addEventListener('DOMContentLoaded', () => {
     const uploadVideo = document.getElementById('upload-video');
-    const viewViolations = document.getElementById('view-violations');
-    const viewVehicles = document.getElementById('view-vehicles');
-    const assignCameras = document.getElementById('assign-cameras');
-    const manageUsers = document.getElementById('manage-users');
-    
-    // Contenedor donde se cargará el contenido dinámico
-    const contentContainer = document.getElementById('dashboard-content');
 
-    // Función para cargar el contenido
-    function loadContent(content) {
-        contentContainer.innerHTML = `<h3>${content}</h3><p>Contenido relacionado con ${content}.</p>`;
+    if (uploadVideo) {
+        uploadVideo.addEventListener('click', (event) => {
+            event.preventDefault(); // Previene la navegación normal
+            loadContent('upload_video'); // Carga el contenido de la ruta
+        });
     }
 
-    // Event listeners para los clics en el menú
-    registerCamera.addEventListener('click', () => loadContent('Registrar Cámara'));
-    viewCamera.addEventListener('click', () => loadContent('Ver Cámara'));
-    uploadVideo.addEventListener('click', () => loadContent('Subir Video'));
-    viewViolations.addEventListener('click', () => loadContent('Ver Infracciones'));
-    viewVehicles.addEventListener('click', () => loadContent('Ver Vehículos'));
-    assignCameras.addEventListener('click', () => loadContent('Asignar Cámaras'));
-    manageUsers.addEventListener('click', () => loadContent('Gestionar Usuarios'));
+    // Función para cargar contenido dinámicamente
+    async function loadContent(route) {
+        const contentDiv = document.getElementById('content'); // Asegúrate de tener un div con este ID
+        contentDiv.innerHTML = ''; // Limpia el contenido previo
+
+        try {
+            const response = await fetch(`/${route}`); // Supone que tienes una ruta como /upload_video
+            const data = await response.text();
+
+            if (response.ok) {
+                contentDiv.innerHTML = data; // Carga el contenido recibido
+                initUploadVideo(); // Inicializa la lógica del upload_video si es necesario
+            } else {
+                contentDiv.innerHTML = '<div class="alert alert-danger">Error al cargar el contenido.</div>';
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            contentDiv.innerHTML = '<div class="alert alert-danger">Ocurrió un error al cargar el contenido.</div>';
+        }
+    }
 });
+

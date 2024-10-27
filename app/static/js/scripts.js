@@ -10,21 +10,19 @@ document.addEventListener('DOMContentLoaded', () => {
             const messageDiv = document.getElementById('message');
 
             try {
-                const response = await fetch('/login', {  // Cambiado de '/auth/login' a '/login'
+                const response = await fetch('/login', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, password })
                 });
-
+                
                 const data = await response.json();
 
-                if (response.status === 200) {
-                    // Almacena el token en el localStorage o en una cookie
+                if (response.ok) {
+                    // Solo almacena el JWT en el localStorage
                     localStorage.setItem('access_token', data.access_token);
                     messageDiv.innerHTML = '<div class="alert alert-success">Login exitoso. Redirigiendo...</div>';
-                    // Redirige al panel de administración
+                    // Redirige al dashboard
                     window.location.href = '/admin/dashboard';
                 } else {
                     messageDiv.innerHTML = `<div class="alert alert-danger">${data.msg}</div>`;

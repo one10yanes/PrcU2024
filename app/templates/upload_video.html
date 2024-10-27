@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subir Video</title>
+</head>
+<body>
+    <h1>Subir Video</h1>
+    <form id="upload-form" action="/upload_video" method="POST" enctype="multipart/form-data">
+        <input type="file" name="video" accept="video/*" required>
+        <button type="submit">Subir</button>
+    </form>
+    
+    <div id="response"></div>
+    
+    <script>
+        const form = document.getElementById('upload-form');
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault(); // Evitar el comportamiento predeterminado del formulario
+            
+            const formData = new FormData(form);
+            try {
+                const response = await fetch('/upload_video', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                // Verifica si la respuesta es correcta
+                if (!response.ok) {
+                    const errorText = await response.text(); // Obtiene el texto de error
+                    throw new Error(`Error en la solicitud: ${errorText}`);
+                }
+
+                const result = await response.json();
+                const responseDiv = document.getElementById('response');
+                responseDiv.innerHTML = ` 
+                    <p>Video subido: <a href="${result.video_url}" target="_blank">${result.video_url}</a></p>
+                    <video width="320" height="240" controls>
+                        <source src="${result.video_url}" type="video/mp4">
+                        Tu navegador no soporta la reproducción de videos.
+                    </video>
+                `;
+            } catch (error) {
+                const responseDiv = document.getElementById('response');
+                responseDiv.innerHTML = `<p>Error: ${error.message}</p>`;
+            }
+        });
+    </script>
+</body>
+</html>
